@@ -1,0 +1,216 @@
+---
+title: "Oregon Extended Assessment"
+output: 
+  flexdashboard::flex_dashboard:
+    #theme: journal
+    #css: ["default", "uo", "uo-fonts", "custom.css"]
+    orientation: columns
+    vertical_layout: fill
+    logo: logo.png
+---
+
+```{r setup, include=FALSE}
+library(here)
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+library(maps)
+library(mapdata)
+library(ggmap)
+library(RColorBrewer)
+library(ggrepel)
+library(flexdashboard)
+library(colorblindr)
+library(extrafont)
+library(tigris)
+library(sf)
+library(sp)
+library(tmap)
+library(rgdal)
+library(xaringan)
+```
+
+```{r load_data, include=FALSE}
+files <- list.files(here::here("data"),
+                    full.names = TRUE)
+files
+
+d <- read_csv(files[1]) %>%
+  clean_names()
+
+dist_bound <- sf::read_sf(files[5]) %>%
+  clean_names()
+
+# ggplot() +
+#   geom_sf(data = dist_bound) +
+#   geom_sf(data = d)
+
+dis_code_tbl <- tibble(
+  disability_code = c(0, 10, 20,
+               40, 50, 60,
+               70, 74,
+               80, 82, 90),
+  disability = c('Not Applicable',
+                 'Intellectually Disabled',
+                 'Hearing Impairment',
+                 'Visual Impairment',
+                 'Communication Disorder',
+                 'Emotional Disturbance',
+                 'Orthopedic Impairment',
+                 'Traumatic Brain Injury',
+                 'Other Health Impairments',
+                 'Autism Spectrum Disorder',
+                 'Specific Learning Disability'))
+
+disab <- left_join(d, dis_code_tbl)
+```
+
+Description of ORExt {.sidebar}
+=====================
+
+This is a dashboard built with data from Oregon's Extended Assessment. See a sample of the assessment here [{data-icon="fa-school"}] (https://orext-practicetests.brtprojects.org)  
+
+[This multimedia training module provides training on the administration of the **Oregon Extended Assessment** (ORExt) and required proficiency assessments](https://or.k12test.com)  
+
+[Curricular and Instructional Materials for **Students with Significant Cognitive Disabilities**](https://lms.brtprojects.org/).  
+
+-----------------------------------------------------------------------
+# Home {data-icon="fa-school"}
+### Map of particpication on ORExt across Oregon
+
+```{r, ORExt_participation_map}
+
+theme_map <- function(...) {
+  theme_minimal() +
+  theme(
+    text = element_text(
+      family = "Ubuntu",
+      color = "#22211d"),
+    axis.line = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    # panel.grid.minor = element_line(
+    #   color = "#ebebe5", size = 0.2),
+    panel.grid.major = element_line(
+      color = "#ebebe5", size = 0.2),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(
+      fill = "#f5f5f2", color = NA),
+    panel.background = element_rect(
+      fill = "#f5f5f2", color = NA),
+    legend.background = element_rect(
+      fill = "#f5f5f2", color = NA),
+    panel.border = element_blank(),
+    ...
+  )
+}
+
+states <- map_data("state") %>%
+  rename(name = region) %>%
+  select(-subregion, -group) %>%
+  filter(name == "oregon")
+
+counties <- map_data("county")
+or_county <- counties %>%
+  filter(region == "oregon")
+
+ggplot(data = states) +
+  geom_polygon(aes(long, lat),
+               fill = "#154937",
+               color = "#55565B",
+               size = 2) +
+  geom_polygon(data = or_county,
+               aes(long, lat,
+                   group = group),
+               fill = NA,
+               color = "#55565B") +
+  geom_bin2d(data = d, aes(lon, lat),
+             binwidth = .08) +
+  scale_fill_viridis_c(option = "plasma",
+                       direction = -1) +
+  coord_quickmap() +
+  theme_map() +
+  labs(title = "Student Participation by School Location in Oregon",
+         subtitle = "Oregon's Extended Assessment for students with significant cognitive disabilities ")
+```
+
+```{r}
+# options(tigris_class = "sf")
+# or <- tigris::states()
+# 
+# or <- or %>%
+#   clean_names() %>%
+#   filter(name == "Oregon") %>%
+#   st_drop_geometry()
+# 
+# dist_bound <- dist_bound %>%
+#   select("statefp", "unsdlea", "geoid", "name") %>%
+#   filter(statefp == 41)
+# 
+# or_map <- left_join(dist_bound, or) %>%
+#   select(1:4)
+
+# ggplot(data = d, aes(lon, lat)) +
+#   geom_point() +
+#   geom_sf(data = or_map, aes(geometry)) +
+#   guides(fill = "none", color = "none") +
+#   scale_fill_identity() +
+#   scale_color_identity()
+```
+
+-----------------------------------------------------------------------
+# Score {data-icon="fa-graduation-cap"}
+### Density of student scores by gender
+
+```{r plot_scores}
+
+score <- ggplot(d, aes(rit)) +
+  geom_histogram(bins = 10) +
+  labs(x = "Scores",
+       y = "Number of Students Tested")
+
+ggplot(disab, aes(rit, fill = gndr)) +
+  geom_density(alpha = 0.3) +
+  scale_fill_OkabeIto() +
+  facet_wrap(~disability) +
+  labs(x = "Scores")
+
+    # vars("Intellectually Disabled",
+    #               "Hearing Impairment",
+    #               "Communication Disorder",
+    #               "Emotional Disturbance",
+    #               "Orthopedic Impairment",
+    #               "Other Health Impairments",
+    #               "Autism Spectrum Disorder",
+    #               "Specific Learning Disability"))
+```
+
+# Disability Categories {data-icon="fas fa-user"} 
+
+### Disability data by categories
+
+```{r plot_disab_cat, fig.width = 12, fig.height = 8}
+
+disab %>%
+  count(disability, disability_code) %>%
+  mutate(disability = fct_reorder(disability, n)) %>%
+ggplot(aes(disability, n)) +
+  geom_col(fill = "cornflowerblue") +
+  geom_text(aes(disability, label = n),
+            nudge_y = -2.5,
+            size = 6,
+            color = "white") +
+  coord_flip() +
+  labs(x = "",
+       y = "Number of Students",
+       title = "Participation by Primary Disability Categories") +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+    theme(plot.title.position = "plot",
+          plot.margin = margin(b = .5, r = .5, unit = "cm"))
+```
