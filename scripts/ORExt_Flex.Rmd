@@ -2,7 +2,6 @@
 title: "Oregon Extended Assessment"
 output: 
   flexdashboard::flex_dashboard:
-    #theme: journal
     #css: ["default", "uo", "uo-fonts", "custom.css"]
     orientation: columns
     vertical_layout: fill
@@ -28,6 +27,8 @@ library(sp)
 library(tmap)
 library(rgdal)
 library(xaringan)
+library(plotly)
+library(gt)
 ```
 
 ```{r load_data, include=FALSE}
@@ -40,10 +41,6 @@ d <- read_csv(files[1]) %>%
 
 dist_bound <- sf::read_sf(files[5]) %>%
   clean_names()
-
-# ggplot() +
-#   geom_sf(data = dist_bound) +
-#   geom_sf(data = d)
 
 dis_code_tbl <- tibble(
   disability_code = c(0, 10, 20,
@@ -153,19 +150,24 @@ ggplot(data = states) +
 # or_map <- left_join(dist_bound, or) %>%
 #   select(1:4)
 
-# ggplot(data = d, aes(lon, lat)) +
-#   geom_point() +
-#   geom_sf(data = or_map, aes(geometry)) +
-#   guides(fill = "none", color = "none") +
-#   scale_fill_identity() +
-#   scale_color_identity()
+ggplot() +
+  geom_sf(data = dist_bound) +
+  coord_sf() +
+  geom_point(data = d, aes(lat, lon))
 ```
 
 -----------------------------------------------------------------------
 # Score {data-icon="fa-graduation-cap"}
 ### Density of student scores by gender
 
-```{r plot_scores}
+```{r plot_scores, fig.width=18, fig.height=12}
+# disab %>%
+#   select(disability, gndr, rit) %>%
+#   group_by(disability, gndr) %>%
+#   summarize(mean(rit)) %>%
+#   ggplot() +
+#   geom_line(disability, rit) +
+#   facet_wrap(~gndr)
 
 score <- ggplot(d, aes(rit)) +
   geom_histogram(bins = 10) +

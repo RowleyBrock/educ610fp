@@ -1,0 +1,62 @@
+---
+title: 'Slides for Final Project'
+author: Brock Rowley
+date: 2020-03-10
+output:
+  xaringan::moon_reader:
+    css: ["default", "uo", "uo-fonts", "my-customizations.css"]
+  lib_dir: libs
+  nature:
+    highlightStyle: github
+    highlightLines: true
+    countIncrementalSlides: false
+---
+#  Briefly show each visualization 
+
+![](assets/img/image2.png)
+
+---
+#  Briefly show each visualization 
+
+![](assets/img/image3.png)
+
+---
+
+![](assets/img/image4.png)
+
+---
+#  Pick 1 and Discuss:Intended audience = ODE, Participating Schools, Other States. Design choices, e.g. Colors = DucksLayout Choice of specific type of plot = Geospatial 
+
++ Pick one, go more in-depth, and discuss:
++ Intended audience =	Design choices =		Colors =		Layout =		Choice of specific plot =
+![](assets/img/image2.png)
+
+---
+
+---
+class: inverse
+background-image: url('assets/img/image6.png')
+background-size: cover
+
+---
+class: inverse
+background-image: url('assets/img/image5.png')
+background-size: cover
+
+---
+class: inverse
+background-image: url('assets/img/image7.png')
+background-size: cover
+
+
+---
+#  At least 1 major challenge encountered along the way 
+
+.pull-left[![](assets/img/image9.png)]
+
+.pull-right[![](assets/img/image8.png)]
+
+---
+#  At least 1 major victory 
+
+![](assets/img/image10.png)
