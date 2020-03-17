@@ -65,11 +65,11 @@ disab <- left_join(d, dis_code_tbl)
 Description of ORExt {.sidebar}
 =====================
 
-This is a dashboard built with data from Oregon's Extended Assessment. See a sample of the assessment here [{data-icon="fa-school"}] (https://orext-practicetests.brtprojects.org)  
+This is a dashboard built with data from Oregon's Extended Assessment (**ORExt**). See a sample of the assessment [here](https://orext-practicetests.brtprojects.org)
 
-[This multimedia training module provides training on the administration of the **Oregon Extended Assessment** (ORExt) and required proficiency assessments](https://or.k12test.com)  
+You can find a multimedia training module that provides training on the administration of the **Oregon Extended Assessment** (ORExt) and required proficiency assessments [here](https://or.k12test.com)  
 
-[Curricular and Instructional Materials for **Students with Significant Cognitive Disabilities**](https://lms.brtprojects.org/).  
+Curricular and Instructional Materials for **Students with Significant Cognitive Disabilities** related to the ORExt [here](https://lms.brtprojects.org/)  
 
 -----------------------------------------------------------------------
 # Home {data-icon="fa-school"}
@@ -157,7 +157,7 @@ ggplot() +
 ```
 
 -----------------------------------------------------------------------
-# Score {data-icon="fa-graduation-cap"}
+# Scores {data-icon="fa-graduation-cap"}
 ### Density of student scores by gender
 
 ```{r plot_scores, fig.width=18, fig.height=12}
