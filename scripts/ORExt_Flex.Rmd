@@ -74,7 +74,7 @@ Curricular and Instructional Materials for **Students with Significant Cognitive
 
 column {.tabset}
 ------------------------------
-### Map of particpication on ORExt across Oregon
+### Particpication on ORExt
 
 ```{r, ORExt_participation_map}
 theme_map <- function(...) {
@@ -135,45 +135,70 @@ for students with significant cognitive disabilities.",
          subtitle = "Map shows Student Participation by School Location")
 ```
 
-### Version 2
-```{r}
+> Now we have lables and it's starting to take shape! Far from a perfect product. I would like to add a hover effect with a link to more info about each point, representing the schools where a students participate on the ORExt. Also, while county lines are benificial to help define the state territory, district boundaries would be more appropriate as this is exclusivly educational data.
 
+### Second Version
+
+```{r map_2, fig.width = 8, fig.height = 6}
+states <- map_data("state") %>%
+  rename(name = region) %>%
+  select(-subregion, -group) %>%
+  filter(name == "oregon")
+
+counties <- map_data("county")
+or_county <- counties %>%
+  filter(region == "oregon")
+
+or_base <- ggplot(data = states) +
+  geom_polygon(aes(long, lat),
+               fill = "#154937",
+               color = "#55565B",
+               size = 2) +
+  geom_bin2d(data = d, aes(lon, lat),
+             binwidth = .08) +
+  scale_fill_viridis_c(option = "plasma",
+                       direction = -1) +
+  theme_void() +
+  geom_polygon(data = or_county,
+               aes(long, lat,
+                   group = group),
+               fill = NA,
+               color = "#55565B") +
+  coord_quickmap()
+
+or_base
 ```
 
-> here is where I talk about the plot
+> Making progress from the previous. Not only are the points easier to read but, now the counties are outlined in grey to help orient (spacial layout) the participation data across the state. Still needs lables.
 
-### Version 3
-```{r}
+### First Draft Version
+```{r map_3, fig.width = 8, fig.height = 6}
+states <- map_data("state") %>%
+  rename(name = region) %>%
+  select(-subregion, -group) %>%
+  filter(name == "oregon")
 
+counties <- map_data("county")
+or_county <- counties %>%
+  filter(region == "oregon")
+
+or_base <- ggplot(data = states) +
+  geom_polygon(aes(long, lat),
+               fill = "#154937",
+               color = "#55565B",
+               size = 2) +
+  geom_bin2d(data = d, aes(lon, lat),
+             binwidth = .08)
+or_base
 ```
 
-> here is where I talk about the plot
-```{r}
-# options(tigris_class = "sf")
-# or <- tigris::states()
-# 
-# or <- or %>%
-#   clean_names() %>%
-#   filter(name == "Oregon") %>%
-#   st_drop_geometry()
-# 
-# dist_bound <- dist_bound %>%
-#   select("statefp", "unsdlea", "geoid", "name") %>%
-#   filter(statefp == 41)
-# 
-# or_map <- left_join(dist_bound, or) %>%
-#   select(1:4)
-
-# ggplot() +
-#   geom_sf(data = dist_bound) +
-#   coord_sf() +
-#   geom_point(data = d, aes(lat, lon))
-```
+> I got a start here. At least the map is of oregon, in green (Go Ducks) and it has the participation point on the map. Still has lat and long and the points are hard to see.
 
 # Participation by Disability Categories {data-icon="fas fa-user"}
 
 Description of ORExt {.sidebar}
 -------------------------------
+Here is a bar plot of participation by disability categorie.
 
 column {.tabset}
 ---------------------------------
@@ -203,21 +228,48 @@ ggplot(aes(disability, n)) +
           plot.margin = margin(b = .5, r = .5, unit = "cm"))
 ```
 
-> here is where I talk about the plot
+> Simple data viz. I wanted to show basic demographics, number of participants by disability categorie and this plot servers that pourpose. Could still use some work, title could be larger, nudge the bars closer to the lables...
 
-### version 2
-```{r}
+### Second Version
 
+```{r plot_disab, fig.width = 12, fig.height = 8}
+
+disab %>%
+  count(disability, disability_code) %>%
+  mutate(disability = fct_reorder(disability, n)) %>%
+ggplot(aes(disability, n)) +
+  geom_col(fill = "cornflowerblue") +
+  geom_text(aes(disability, label = n),
+            nudge_y = -2.5,
+            size = 6,
+            color = "white") +
+  coord_flip() +
+  labs(x = "",
+       y = "Number of Students",
+       title = "Participation by Primary Disability Categories") +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(color = "gray80")) +
+    theme(plot.title.position = "plot",
+          plot.margin = margin(b = .5, r = .5, unit = "cm"))
 ```
 
-> here is where I talk about the plot
+> I really wanted to go with a plot like this. I tried to get the white text anotation to work at the end of the bar plots. I could not figure out how to nudge left/right and get the data to read fully.
 
-### version 3
-```{r}
+### First Draft Version
 
+```{r start_plot, fig.width = 12, fig.height = 8}
+disab4 <- disab %>%
+  count(disability, disability_code) %>%
+  mutate(disability = fct_reorder(disability, n)) %>%
+ggplot(aes(disability, n)) +
+  geom_col(fill = "cornflowerblue") +
+  geom_text(aes(disability, label = n))
+disab4
 ```
 
-> here is where I talk about the plot
+> This is a work of art, if you like Jackson Pollock's ink splatters! The basic communication is there but obviously the disability labels are overlapping and not legible. 
 
 # Scores by Disability Categories {data-icon="fa-graduation-cap"}
 
@@ -251,21 +303,14 @@ ggplot(aes(rit, fill = gndr)) +
 disab2
 ```
 
-> Added theme dark
+> Added theme dark on a total whim from D.A's recomendation and it really works for me. The disability labels above each of the facet wraps are now readable and the data seems to pop more. I limited the disability categories from the previous without numbers or meaningful data. Stil could use some work like changing gnder to gender and providing some lables...
 
-### version 2
+### Second Version
 ```{r plot_scores, fig.width=18, fig.height=12}
 disab1 <- disab %>%
   group_by(disability, gndr, rit) %>%
-  filter(disability %in% c("Intellectually Disabled",
-                         "Communication Disorder",
-                         "Emotional Disturbance",
-                         "Orthopedic Impairment",
-                         "Other Health Impairments",
-                         "Autism Spectrum Disorder",
-                         "Specific Learning Disability")) %>%
   select(disability, gndr, rit) %>%
-ggplot(aes(rit, fill = gndr)) +
+  ggplot(aes(rit, fill = gndr)) +
   geom_density(alpha = 0.3) +
   scale_fill_OkabeIto() +
   facet_wrap(~disability) +
@@ -274,9 +319,9 @@ ggplot(aes(rit, fill = gndr)) +
 disab1
 ```
 
-> More chatter here
+> This is the output I was shooting for. Density of male/female, facet wrapped by disability category. I don't like the outputs with few participants (TBI and Visual Imparment) and those with "Not Applicable" at the disability categorie. I just don't think they communicate useful information other than a small n size.
 
-### version 3
+### First Draft Version
 ```{r plot3, options}
 score <- ggplot(d, aes(rit)) +
   geom_histogram(bins = 10) +
@@ -285,4 +330,4 @@ score <- ggplot(d, aes(rit)) +
 score
 ```
 
-> More chatter here
+> This is how I got started. Basic distribution of scores by number of participants. I don't know why but, I left this here because sometimes the simplest of plots still communicates the message. Lot's of the outputs in our ORExt tech report are simple and straight forward like this output.
