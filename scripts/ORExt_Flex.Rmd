@@ -62,8 +62,9 @@ dis_code_tbl <- tibble(
 disab <- left_join(d, dis_code_tbl)
 ```
 
+# Home {data-icon="fa-school"}
 Description of ORExt {.sidebar}
-=====================
+-------------------------------
 
 This is a dashboard built with data from Oregon's Extended Assessment (**ORExt**). See a sample of the assessment [here](https://orext-practicetests.brtprojects.org)
 
@@ -71,12 +72,11 @@ You can find a multimedia training module that provides training on the administ
 
 Curricular and Instructional Materials for **Students with Significant Cognitive Disabilities** related to the ORExt [here](https://lms.brtprojects.org/)  
 
------------------------------------------------------------------------
-# Home {data-icon="fa-school"}
+column {.tabset}
+------------------------------
 ### Map of particpication on ORExt across Oregon
 
 ```{r, ORExt_participation_map}
-
 theme_map <- function(...) {
   theme_minimal() +
   theme(
@@ -130,11 +130,24 @@ ggplot(data = states) +
                        direction = -1) +
   coord_quickmap() +
   theme_map() +
-  labs(title = "Oregon's Extended Assessment (ORExt)  
+  labs(title = "Oregon's Extended Assessment (ORExt)
 for students with significant cognitive disabilities.",
          subtitle = "Map shows Student Participation by School Location")
 ```
 
+### Version 2
+```{r}
+
+```
+
+> here is where I talk about the plot
+
+### Version 3
+```{r}
+
+```
+
+> here is where I talk about the plot
 ```{r}
 # options(tigris_class = "sf")
 # or <- tigris::states()
@@ -151,14 +164,20 @@ for students with significant cognitive disabilities.",
 # or_map <- left_join(dist_bound, or) %>%
 #   select(1:4)
 
-ggplot() +
-  geom_sf(data = dist_bound) +
-  coord_sf() +
-  geom_point(data = d, aes(lat, lon))
+# ggplot() +
+#   geom_sf(data = dist_bound) +
+#   coord_sf() +
+#   geom_point(data = d, aes(lat, lon))
 ```
 
------------------------------------------------------------------------
-# Participation by Disability Categories {data-icon="fas fa-user"} 
+# Participation by Disability Categories {data-icon="fas fa-user"}
+
+Description of ORExt {.sidebar}
+-------------------------------
+
+column {.tabset}
+---------------------------------
+
 ### Disability data by categories
 
 ```{r plot_disab_cat, fig.width = 12, fig.height = 8}
@@ -184,17 +203,59 @@ ggplot(aes(disability, n)) +
           plot.margin = margin(b = .5, r = .5, unit = "cm"))
 ```
 
------------------------------------------------------------------------
+> here is where I talk about the plot
+
+### version 2
+```{r}
+
+```
+
+> here is where I talk about the plot
+
+### version 3
+```{r}
+
+```
+
+> here is where I talk about the plot
+
 # Scores by Disability Categories {data-icon="fa-graduation-cap"}
+
+Description of ORExt {.sidebar}
+-------------------------------
+Here is a density plot of rit scores by disability and gender. 
+
+column {.tabset}
+---------------------------------
+
 ### Density of student scores by disability and gender
 
-```{r plot_scores, fig.width=18, fig.height=12}
-# score <- ggplot(d, aes(rit)) +
-#   geom_histogram(bins = 10) +
-#   labs(x = "Scores",
-#        y = "Number of Students Tested")
+```{r plot2, options}
+disab2 <- disab %>%
+  group_by(disability, gndr, rit) %>%
+  filter(disability %in% c("Intellectually Disabled",
+                         "Communication Disorder",
+                         "Emotional Disturbance",
+                         "Orthopedic Impairment",
+                         "Other Health Impairments",
+                         "Autism Spectrum Disorder",
+                         "Specific Learning Disability")) %>%
+  select(disability, gndr, rit) %>%
+ggplot(aes(rit, fill = gndr)) +
+  geom_density(alpha = 0.3) +
+  scale_fill_OkabeIto() +
+  facet_wrap(~disability) +
+  theme_dark() + 
+  labs(x = "Scores")
 
-disab <- disab %>%
+disab2
+```
+
+> Added theme dark
+
+### version 2
+```{r plot_scores, fig.width=18, fig.height=12}
+disab1 <- disab %>%
   group_by(disability, gndr, rit) %>%
   filter(disability %in% c("Intellectually Disabled",
                          "Communication Disorder",
@@ -209,10 +270,19 @@ ggplot(aes(rit, fill = gndr)) +
   scale_fill_OkabeIto() +
   facet_wrap(~disability) +
   labs(x = "Scores")
-# print(disab)
-#   group_by(disability, gndr) %>%
-#   summarize(mean(rit)) %>%
-#   ggplot() +
-#   geom_line(disability, rit) +
-#   facet_wrap(~gndr)
+
+disab1
 ```
+
+> More chatter here
+
+### version 3
+```{r plot3, options}
+score <- ggplot(d, aes(rit)) +
+  geom_histogram(bins = 10) +
+  labs(x = "Scores",
+       y = "Number of Students Tested")
+score
+```
+
+> More chatter here
