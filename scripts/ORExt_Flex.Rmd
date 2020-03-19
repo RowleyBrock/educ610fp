@@ -192,7 +192,7 @@ or_base <- ggplot(data = states) +
 or_base
 ```
 
-> I got a start here. At least the map is of oregon, in green (Go Ducks) and it has the participation point on the map. Still has lat and long and the points are hard to see.
+> I got a start here. At least the map is of oregon, in green (Go Ducks) and it has the participation points on the map. Still has lat and long for x and y lables and the points are too hard to see.
 
 # Participation by Disability Categories {data-icon="fas fa-user"}
 
